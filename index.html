@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <link
+      rel="stylesheet"
+      href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"
+      integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u"
+      crossorigin="anonymous"
+    />
+    <script
+      src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.20.0/axios.min.js"
+      integrity="sha512-quHCp3WbBNkwLfYUMd+KwBAgpVukJu5MncuQaWXgCrfgcxCJAq/fo+oqrRKOj+UKEmyMCG3tb8RB63W+EmrOBg=="
+      crossorigin="anonymous"
+    ></script>
+    <script
+      src="https://cdnjs.cloudflare.com/ajax/libs/html5-history-api/4.2.10/history.min.js"
+      integrity="sha512-gxZvniqeFEtzm8B0kWQCOsaNi3zWGtJfwFs7f8K6dBuD8WayVvLzAPcWJczve0PvkNWhgVko9yZYfoW4apxrtw=="
+      crossorigin="anonymous"
+    ></script>
+  </head>
+  <body>
+    <div class="container-fluid">
+      <h1 class="row">Login</h1>
+
+      <main>
+        <div id="u" class="row">
+          <label for="username">Username</label>
+          <input type="text" name="username" id="username" />
+        </div>
+
+        <div id="p" class="row">
+          <label for="password">Password</label>
+          <input type="password" name="password" id="password" />
+        </div>
+      </main>
+      <div class="buttons">
+        <button data-name="/api/login" onclick="login()">Login</button>
+        <button data-name="/api/dashboard" onclick="getDashboard()">
+          Dashboard
+        </button>
+        <button data-name="/api/settings" onclick="getSettings()">
+          Settings
+        </button>
+      </div>
+    </div>
+
+    <script>
+      var token = "";
+      function login() {
+        const data = {
+          username: document.getElementById("username").value,
+          password: document.getElementById("password").value,
+        };
+        axios.post("/api/login", data).then((res) => {
+          console.log(res);
+          document.getElementById("username").value = "";
+          document.getElementById("password").value = "";
+          if (res && res.data && res.data.success) {
+            const token = res.data.token;
+            localStorage.setItem("jwt", token);
+            document.querySelector("h1.row").innerHTML = res.data.myContent;
+            document.querySelector("main").innerHTML = "";
+            history.pushState(this.document.activeElement, null, "homepage");
+          }
+        });
+      }
+
+      function getDashboard() {
+        const token = localStorage.getItem("jwt");
+        axios
+          .get("/api/dashboard", {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          })
+          .then((res) => {
+            if (res && res.data && res.data.success) {
+              document.querySelector("h1.row").innerHTML = "Dashboard";
+              document.querySelector("main").innerHTML = res.data.myContent;
+              history.pushState(this.document.activeElement, null, "dashboard");
+            }
+          });
+      }
+
+      function getSettings() {
+        const token = localStorage.getItem("jwt");
+        axios
+          .get("/api/settings", {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          })
+          .then((res) => {
+            if (res && res.data && res.data.success) {
+              document.querySelector("h1.row").innerHTML = "Settings";
+              document.querySelector("main").innerHTML = res.data.myContent;
+              history.pushState(this.document.activeElement, null, "settings");
+            }
+          });
+      }
+
+      //   var buttons = document.querySelector(".buttons");
+      //   buttons.addEventListener(
+      //     "click",
+      //     function (e) {
+      //       if (e.target != e.currentTarget) {
+      //         e.preventDefault();
+      //         // e.target is the image inside the link we just clicked.
+      //         var data = e.target.getAttribute("data-name");
+      //         url = data;
+      //         console.log("data: " + data);
+      //         console.log("URL: " + url);
+      //         history.pushState(history.state, null, url);
+      //         window.addEventListener("popstate", function (e) {
+      //           // e.state is equal to the data-attribute of the last image we clicked
+      //           var myPage = e;
+      //           console.log("my page: " + myPage);
+      //         });
+      //       }
+      //       e.stopPropagation();
+      //     },
+      //     false
+      //   );
+
+      //   function onLoad() {
+      //     history.pushState(null, null, "homepage");
+      //   }
+      //   onLoad();
+
+      window.addEventListener("popstate", function (e) {
+        console.log(e);
+        if (e.state == null) {
+          this.document.location = "http://localhost:3000";
+        } else {
+          console.log("made it to the popstate else statement");
+          e.state.click();
+        }
+      });
+    </script>
+  </body>
+</html>
