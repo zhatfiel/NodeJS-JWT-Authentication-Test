@@ -81,7 +81,7 @@ app.get('/api/settings', jwtMW, (req, res) => {
     });
 });
 
-app.get('/', (req, res) => {
+app.get('/*', (req, res) => {
     res.sendFile(path.join(__dirname, 'index.html'));
 });
 

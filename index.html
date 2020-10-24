@@ -37,18 +37,17 @@
         </div>
       </main>
       <div class="buttons">
-        <button data-name="/api/login" onclick="login()">Login</button>
-        <button data-name="/api/dashboard" onclick="getDashboard()">
+        <button data-name="login" onclick="login()">Login</button>
+        <button data-name="dashboard" onclick="getDashboard()">
           Dashboard
         </button>
-        <button data-name="/api/settings" onclick="getSettings()">
-          Settings
-        </button>
+        <button data-name="settings" onclick="getSettings()">Settings</button>
       </div>
     </div>
 
     <script>
       var token = "";
+
       function login() {
         const data = {
           username: document.getElementById("username").value,
@@ -63,8 +62,8 @@
             localStorage.setItem("jwt", token);
             document.querySelector("h1.row").innerHTML = res.data.myContent;
             document.querySelector("main").innerHTML = "";
-            history.pushState(this.document.activeElement, null, "homepage");
           }
+          history.pushState(document.body.innerHTML, null, "homepage");
         });
       }
 
@@ -80,8 +79,8 @@
             if (res && res.data && res.data.success) {
               document.querySelector("h1.row").innerHTML = "Dashboard";
               document.querySelector("main").innerHTML = res.data.myContent;
-              history.pushState(this.document.activeElement, null, "dashboard");
             }
+            history.pushState(document.body.innerHTML, null, "dashboard");
           });
       }
 
@@ -97,46 +96,16 @@
             if (res && res.data && res.data.success) {
               document.querySelector("h1.row").innerHTML = "Settings";
               document.querySelector("main").innerHTML = res.data.myContent;
-              history.pushState(this.document.activeElement, null, "settings");
             }
+            history.pushState(document.body.innerHTML, null, "settings");
           });
       }
 
-      //   var buttons = document.querySelector(".buttons");
-      //   buttons.addEventListener(
-      //     "click",
-      //     function (e) {
-      //       if (e.target != e.currentTarget) {
-      //         e.preventDefault();
-      //         // e.target is the image inside the link we just clicked.
-      //         var data = e.target.getAttribute("data-name");
-      //         url = data;
-      //         console.log("data: " + data);
-      //         console.log("URL: " + url);
-      //         history.pushState(history.state, null, url);
-      //         window.addEventListener("popstate", function (e) {
-      //           // e.state is equal to the data-attribute of the last image we clicked
-      //           var myPage = e;
-      //           console.log("my page: " + myPage);
-      //         });
-      //       }
-      //       e.stopPropagation();
-      //     },
-      //     false
-      //   );
-
-      //   function onLoad() {
-      //     history.pushState(null, null, "homepage");
-      //   }
-      //   onLoad();
-
       window.addEventListener("popstate", function (e) {
-        console.log(e);
         if (e.state == null) {
-          this.document.location = "http://localhost:3000";
+          window.location = window.origin;
         } else {
-          console.log("made it to the popstate else statement");
-          e.state.click();
+          document.body.innerHTML = e.state;
         }
       });
     </script>
